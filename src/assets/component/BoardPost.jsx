@@ -2,17 +2,21 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const BoardPost = ({ mypage, dataContents }) => {
-  const { title, content, id, date } = dataContents;
-  const goDetail = useNavigate();
+  const { title, content, boardId, date } = dataContents;
+  const navigate = useNavigate();
 
   const handleDelete = () => {
     console.log("delete"); /* 삭제 버튼 onClick 활성화를 위해 console.log 추가해놨습니다. */
   };
 
+  const goDetail = () => {
+    navigate(`/board/${boardId}`);
+  };
+
   return (
     <PostArea>
       <PostContainer>
-        <PostTitleBox onClick={() => goDetail(id)}>
+        <PostTitleBox onClick={goDetail}>
           <PostTitle>{title}</PostTitle>
           <PostContent>{content}</PostContent>
         </PostTitleBox>
@@ -22,7 +26,7 @@ const BoardPost = ({ mypage, dataContents }) => {
         {/* mypage면 삭제 버튼이 띄워져야 합니다. */}
       </PostContainer>
       <PostUserBox>
-        <PostUserId>{id}</PostUserId>|<PostDate>{date}</PostDate>
+        <PostUserId>{boardId}</PostUserId>|<PostDate>{date}</PostDate>
       </PostUserBox>
     </PostArea>
   );
