@@ -5,9 +5,13 @@ import BoardPost from "../../component/BoardPost";
 import SmallButton from "../../component/SmallButton";
 import WritePost from "../../component/modal/WritePost";
 
+import { AxiosPostList } from "../../../api/Board/AxiosPostList";
+
 const Post = () => {
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
   const [showWriteModal, setShowWriteModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [postList, setPostList] = useState([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -29,62 +33,19 @@ const Post = () => {
     setShowWriteModal(false);
   };
 
-  const dataContents = [
-    {
-      id: "0",
-      title: "title1",
-      content: "text1",
-      date: "2023.07.06 17:05",
-    },
-    {
-      id: "1",
-      title: "title2",
-      content: "text2",
-      date: "2023.07.06 20:22",
-    },
-    {
-      id: "2",
-      title: "title3",
-      content: "text3",
-      date: "2023.07.06 23:11",
-    },
-    {
-      id: "3",
-      title: "title4",
-      content: "text4",
-      date: "2023.07.06 23:11",
-    },
-    {
-      id: "4",
-      title: "title5",
-      content: "text5",
-      date: "2023.07.06 23:11",
-    },
-    {
-      id: "5",
-      title: "title6",
-      content: "text6",
-      date: "2023.07.06 23:11",
-    },
-    {
-      id: "6",
-      title: "title7",
-      content: "text7",
-      date: "2023.07.06 23:11",
-    },
-    {
-      id: "7",
-      title: "title8",
-      content: "text8",
-      date: "2023.07.06 23:21",
-    },
-    {
-      id: "8",
-      title: "title9",
-      content: "text9",
-      date: "2023.07.07 11:11",
-    },
-  ];
+  const fetchData = async () => {
+    try {
+      const response = await AxiosPostList();
+      setPostList(response?.boards);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -93,8 +54,8 @@ const Post = () => {
           <BoardName>게시판</BoardName>
           <BoardBox>
             <BoardDetail>
-              {dataContents.map((item, idx) => (
-                <BoardPost key={item.id} id={idx} dataContents={item} />
+              {postList.map((item, idx) => (
+                <BoardPost key={item.boardId} id={idx} dataContents={item} />
               ))}
             </BoardDetail>
           </BoardBox>
