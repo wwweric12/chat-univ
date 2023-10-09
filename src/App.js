@@ -9,7 +9,6 @@ import Footer from "./assets/component/Footer";
 import Post from "./assets/pages/Board/Post";
 import Detail from "./assets/pages/Board/Detail";
 import Login from "./assets/pages/Login/Login";
-import Join from "./assets/pages/Join/Join";
 import Main from "./assets/pages/Main/Main";
 import Lanking from "./assets/pages/Statistics/Lanking";
 import EditProfile from "./assets/pages/Mypage/EditProfile";
@@ -34,8 +33,7 @@ const App = () => {
                     <Route path="/board" element={<Post />} />
                     <Route path="/" element={<Main />} />
                     <Route path="/lanking" element={<Lanking />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/join" element={<Join />} />
+                    <Route path="/login" element={<Login />} /> 
                     <Route path="/mypage" element={<Mypage />} />
                     <Route path="/chatting/:id" element={<Chatting />} />
                   </Route>

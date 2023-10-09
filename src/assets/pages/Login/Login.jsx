@@ -1,13 +1,15 @@
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 import Input from "../../component/Input";
 import LargeButton from "../../component/LargeButton";
 import { validation } from "./Validation";
+import { Signin } from '../../../api/Auth/SignIn';
 
 const Login = () => {
+  const navigate= useNavigate();
   const {
     register,
     handleSubmit,
@@ -17,8 +19,15 @@ const Login = () => {
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
+
   const onSubmit = (data) => {
-    console.log(data);
+    Signin(data,callbackFunction);
+  };
+
+  const callbackFunction=(data)=>{
+    localStorage.setItem('accessToken',data.accessToken);
+    navigate('/');
+
   };
 
   const handleErrorMessage = () => {
@@ -51,14 +60,8 @@ const Login = () => {
         </InputContainer>
 
         <ButtonBlock>
-          <LargeButton text="로그인" type="submit" />
+          <LargeButton text="로그인/회원가입" type="submit" />
         </ButtonBlock>
-        <SignupContainer>
-          <SignupText>아직 회원이 아니신가요?</SignupText>
-          <Link to="/join">
-            <SignupLink>회원가입하러가기</SignupLink>
-          </Link>
-        </SignupContainer>
       </LoginForm>
     </LoginContainer>
   );
@@ -100,27 +103,3 @@ const LoginError = styled.div`
   font-size: 12px;
 `;
 
-const SignupContainer = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-`;
-
-const SignupText = styled.div`
-  font-size: 14px;
-  padding: 10px;
-  color: ${({ theme }) => theme.colors.GRAY};
-  @media (max-width: 529px) {
-    font-size: 12px;
-  }
-`;
-
-const SignupLink = styled.span`
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.PURPLE100};
-  text-decoration: underline;
-  @media (max-width: 529px) {
-    font-size: 12px;
-  }
-`;
