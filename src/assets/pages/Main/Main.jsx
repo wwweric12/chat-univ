@@ -5,10 +5,23 @@ import SmallButton from "../../component/SmallButton";
 import Search from "../../component/Search";
 import CreateChat from "../../component/modal/CreateChat";
 import ChatList from "../../component/ChatList";
+import { getChats } from "../../../api/Chat/Chats";
 
 const Main = () => {
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
   const [showCreateChatModal, setShowCreateChatModal] = useState(false);
+  const [chats, newChats] = useState('');
+
+  //전체 채팅방 조회 api
+  useEffect(() => {
+    getChats()
+      .then(data => {
+        newChats(data.chats);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -21,33 +34,6 @@ const Main = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  const dataContents = [
-    {
-      id: "0",
-      title: "title1",
-      content: "text1",
-      date: "2023.07.06 17:05",
-    },
-    {
-      id: "1",
-      title: "title2",
-      content: "text2",
-      date: "2023.07.06 20:22",
-    },
-    {
-      id: "2",
-      title: "title3",
-      content: "text3",
-      date: "2023.07.06 23:11",
-    },
-    {
-      id: "3",
-      title: "title4",
-      content: "text4",
-      date: "2023.07.06 23:11",
-    },
-  ];
 
   const openCreateChatModal = () => {
     setShowCreateChatModal(true);
@@ -63,13 +49,16 @@ const Main = () => {
         <Search />
 
         <ListBox>
-          {dataContents.map((item) => (
-            <Link to={`/chatting/${item.id}`} key={item.id}>
-              <ChatListBox>
-                <ChatList title={item.title} content={item.content} />
-              </ChatListBox>
-            </Link>
-          ))}
+          {chats.length > 0 && (
+            chats.map((item) => (
+              <Link to={`/chatting/${item.chatId}`} key={item.chatId}>
+                <ChatListBox>
+                  <ChatList title={item.title} content={item.content} />
+                </ChatListBox>
+              </Link>
+            ))
+          )}
+
         </ListBox>
       </InLayout>
       <BLayout>
@@ -124,6 +113,7 @@ const ListBox = styled.div`
   padding: 10px 20px;
   gap: 30px;
   align-self: stretch;
+  overflow-y: auto;
 
   &::-webkit-scrollbar {
     width: 0;
