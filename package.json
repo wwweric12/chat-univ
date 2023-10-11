@@ -2,6 +2,7 @@
   "name": "chatuniv",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://woowacourse.store",
   "dependencies": {
     "@hookform/resolvers": "^3.1.1",
     "@testing-library/jest-dom": "^5.14.1",

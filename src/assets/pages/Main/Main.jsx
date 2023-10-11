@@ -11,6 +11,7 @@ const Main = () => {
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
   const [showCreateChatModal, setShowCreateChatModal] = useState(false);
   const [chats, newChats] = useState('');
+  const [searchResult, setSearchResult] = useState([]);
 
   //전체 채팅방 조회 api
   useEffect(() => {
@@ -43,13 +44,24 @@ const Main = () => {
     setShowCreateChatModal(false);
   };
 
+  console.log(searchResult.length);
+
   return (
     <Layout height={layoutHeight - 150}>
       <InLayout>
-        <Search />
+        <Search setSearchResult={setSearchResult} />
 
         <ListBox>
-          {chats.length > 0 && (
+          {searchResult.length > 0 ? (
+            searchResult.map((item) => (
+              <Link to={`/chatting/${item.conversationId}`} key={item.conversationId}>
+                <ChatListBox>
+                  <ChatList title={item.ask} content={item.answer} />
+                </ChatListBox>
+              </Link>
+            ))
+          ) : (
+            chats.length > 0 &&
             chats.map((item) => (
               <Link to={`/chatting/${item.chatId}`} key={item.chatId}>
                 <ChatListBox>
@@ -58,7 +70,6 @@ const Main = () => {
               </Link>
             ))
           )}
-
         </ListBox>
       </InLayout>
       <BLayout>

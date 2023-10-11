@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
 import searchSrc from "../images/search.svg";
 import closeSrc from "../images/search_close.svg";
+import { getChatSearch } from "../../api/Chat/ChatSearch";
 
-const Search = () => {
+const Search = ({setSearchResult}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchSubmitted, setSearchSubmitted] = useState(false);
   const navigate = useNavigate();
@@ -24,14 +24,20 @@ const Search = () => {
     }
   }, [location.search]);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    const queryParams = new URLSearchParams();
-    queryParams.set("q", searchTerm);
+    try {
+      const response = await getChatSearch(searchTerm, 10, 4);
+      setSearchResult(response.conversations);
+      const queryParams = new URLSearchParams();
+      queryParams.set("q", searchTerm);
 
-    const searchPath = `${location.pathname}?${queryParams.toString()}`;
-    navigate(searchPath);
-    setSearchSubmitted(true);
+      const searchPath = `${location.pathname}?${queryParams.toString()}`;
+      navigate(searchPath);
+      setSearchSubmitted(true);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleClearSearch = () => {
