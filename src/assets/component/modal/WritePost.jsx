@@ -1,8 +1,21 @@
 import styled from "styled-components";
+import { useState } from "react";
 
 import close from "../../images/modal_close.svg";
+import { AxiosWritePost } from "../../../api/Board/AxiosWritePost";
 
-const WritePost = ({ closeBtn, completeBtn }) => {
+const WritePost = ({ closeBtn }) => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  const handleTitle = (e) => {
+    setTitle(e.target.value);
+  };
+
+  const handleContent = (e) => {
+    setContent(e.target.value);
+  };
+
   return (
     <Container>
       <Header>
@@ -13,12 +26,18 @@ const WritePost = ({ closeBtn, completeBtn }) => {
       </Header>
       <ContentContainer>
         <ContentBox>
-          <ContentHeader placeholder="제목"></ContentHeader>
-          <ContentDetail placeholder="내용을 입력하세요."></ContentDetail>
+          <ContentHeader placeholder="제목" onChange={handleTitle}></ContentHeader>
+          <ContentDetail placeholder="내용을 입력하세요." onChange={handleContent}></ContentDetail>
         </ContentBox>
       </ContentContainer>
       <Footer>
-        <Button onClick={completeBtn}>완료</Button>
+        <Button
+          onClick={() => {
+            AxiosWritePost({ title, content });
+          }}
+        >
+          완료
+        </Button>
       </Footer>
     </Container>
   );
