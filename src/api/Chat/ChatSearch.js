@@ -1,9 +1,8 @@
 import { Axios } from "../Axios";
-import axios from 'axios';
 
 export const getChatSearch = async (keyword, pageSize, conversationId) => {
   try {
-    const response = await axios.get(`/api/chats/search?keyword=${keyword}&pageSize=${pageSize}&conversationId=${conversationId}`, {
+    const response = await Axios.get(`/api/chats/search?keyword=${keyword}&pageSize=${pageSize}&conversationId=${conversationId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
