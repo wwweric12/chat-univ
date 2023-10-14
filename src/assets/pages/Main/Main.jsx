@@ -6,12 +6,30 @@ import Search from "../../component/Search";
 import CreateChat from "../../component/modal/CreateChat";
 import ChatList from "../../component/ChatList";
 import { getChats } from "../../../api/Chat/Chats";
+import { getChatSearch } from "../../../api/Chat/ChatSearch";
 
 const Main = () => {
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
   const [showCreateChatModal, setShowCreateChatModal] = useState(false);
   const [chats, newChats] = useState('');
-  const [searchResult, setSearchResult] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchList, setSearchList] = useState([]);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const newSearchTerm = queryParams.get("q");
+    setSearchTerm(newSearchTerm);
+
+    //검색 리스트 조회
+    getChatSearch(newSearchTerm, 10, 4)
+      .then(data => {
+        setSearchList(data.conversations);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+  }, [window.location.search]);
 
   //전체 채팅방 조회 api
   useEffect(() => {
@@ -28,9 +46,7 @@ const Main = () => {
     const handleResize = () => {
       setLayoutHeight(window.innerHeight);
     };
-
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -44,24 +60,27 @@ const Main = () => {
     setShowCreateChatModal(false);
   };
 
-  console.log(searchResult.length);
+  // 단어 길이가 0 이상이고 리스트 길이가 0 이상이면, searchList로 map함수 적용
+  // 단어길이가 0이상이고 리스트길이가 0이면 "검색 결과가 없습니다."가 뜨게
+  // 아니면 chats로 map함수 적용됐으면 좋겠어
 
   return (
     <Layout height={layoutHeight - 150}>
       <InLayout>
-        <Search setSearchResult={setSearchResult} />
+        <Search />
 
         <ListBox>
-          {searchResult.length > 0 ? (
-            searchResult.map((item) => (
+          {searchTerm !== null && searchList.length > 0 ? (
+            searchList.map((item) => (
               <Link to={`/chatting/${item.conversationId}`} key={item.conversationId}>
                 <ChatListBox>
                   <ChatList title={item.ask} content={item.answer} />
                 </ChatListBox>
               </Link>
             ))
-          ) : (
-            chats.length > 0 &&
+          ) : searchTerm !== null && searchList.length === 0 ? (
+            <p>검색 결과가 없습니다.</p>
+          ) : chats.length > 0 ? (
             chats.map((item) => (
               <Link to={`/chatting/${item.chatId}`} key={item.chatId}>
                 <ChatListBox>
@@ -69,7 +88,10 @@ const Main = () => {
                 </ChatListBox>
               </Link>
             ))
+          ) : (
+            <p>채팅방이 없습니다.</p>
           )}
+
         </ListBox>
       </InLayout>
       <BLayout>

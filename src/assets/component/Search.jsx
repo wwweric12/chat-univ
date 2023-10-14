@@ -5,16 +5,15 @@ import searchSrc from "../images/search.svg";
 import closeSrc from "../images/search_close.svg";
 import { getChatSearch } from "../../api/Chat/ChatSearch";
 
-const Search = ({setSearchResult}) => {
+const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchSubmitted, setSearchSubmitted] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const querySearchTerm = queryParams.get("q");
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const querySearchTerm = queryParams.get("q");
-
     if (querySearchTerm) {
       setSearchTerm(querySearchTerm);
       setSearchSubmitted(true);
@@ -24,20 +23,13 @@ const Search = ({setSearchResult}) => {
     }
   }, [location.search]);
 
-  const handleSearch = async (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
-    try {
-      const response = await getChatSearch(searchTerm, 10, 4);
-      setSearchResult(response.conversations);
-      const queryParams = new URLSearchParams();
-      queryParams.set("q", searchTerm);
-
-      const searchPath = `${location.pathname}?${queryParams.toString()}`;
-      navigate(searchPath);
-      setSearchSubmitted(true);
-    } catch (error) {
-      console.error(error);
-    }
+    queryParams.set("q", searchTerm);
+    const searchPath = `${location.pathname}?${queryParams.toString()}`;
+    navigate(searchPath);
+    setSearchSubmitted(true);
+    window.location.reload();
   };
 
   const handleClearSearch = () => {
@@ -45,6 +37,7 @@ const Search = ({setSearchResult}) => {
     setSearchSubmitted(false);
     const searchPath = location.pathname;
     navigate(searchPath);
+    window.location.reload();
   };
 
   return (
