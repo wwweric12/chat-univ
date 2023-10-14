@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 const Mypage = () => {
   const [myPageData, seMyPageData] = useState([
+    { path: "editprofile", title: "내 정보 수정" },
     { path: "boardlist", title: "게시물내역 조회" },
     { path: "mychatlist", title: "채팅내역 조회" },
     { path: "comment", title: "댓글내역 조회" },

@@ -16,6 +16,7 @@ import BoardList from "./assets/pages/Mypage/BoardList";
 import Chatting from "./assets/pages/Chat/Chatting";
 import CommentHistory from "./assets/pages/Mypage/CommentHistory";
 import MyChatList from "./assets/pages/Mypage/MyChatList";
+import EditProfile from "./assets/pages/Mypage/EditProfile";
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
                     <Route path="/mypage" element={<Mypage />} />
                     <Route path="/chatting/:id" element={<Chatting />} />
                   </Route>
+                  <Route path="/mypage/editprofile" element={<EditProfile />} />
                   <Route path="/mypage/boardlist" element={<BoardList />} />
                   <Route path="/mypage/comment" element={<CommentHistory />} />
                   <Route path="/mypage/mychatlist" element={<MyChatList />} />
