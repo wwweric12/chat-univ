@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import searchSrc from "../images/search.svg";
 import closeSrc from "../images/search_close.svg";
-import { getChatSearch } from "../../api/Chat/ChatSearch";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +28,6 @@ const Search = () => {
     const searchPath = `${location.pathname}?${queryParams.toString()}`;
     navigate(searchPath);
     setSearchSubmitted(true);
-    window.location.reload();
   };
 
   const handleClearSearch = () => {
@@ -37,7 +35,6 @@ const Search = () => {
     setSearchSubmitted(false);
     const searchPath = location.pathname;
     navigate(searchPath);
-    window.location.reload();
   };
 
   return (

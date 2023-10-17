@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import SmallButton from "../../component/SmallButton";
 import Search from "../../component/Search";
 import CreateChat from "../../component/modal/CreateChat";
@@ -14,33 +14,7 @@ const Main = () => {
   const [chats, newChats] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchList, setSearchList] = useState([]);
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const newSearchTerm = queryParams.get("q");
-    setSearchTerm(newSearchTerm);
-
-    //검색 리스트 조회
-    getChatSearch(newSearchTerm, 10, 4)
-      .then(data => {
-        setSearchList(data.conversations);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-
-  }, [window.location.search]);
-
-  //전체 채팅방 조회 api
-  useEffect(() => {
-    getChats()
-      .then(data => {
-        newChats(data.chats);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }, []);
+  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -52,6 +26,31 @@ const Main = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const newSearchTerm = queryParams.get("q");
+    setSearchTerm(newSearchTerm);
+
+    getChatSearch(newSearchTerm, 10, 4)
+      .then(data => {
+        setSearchList(data.conversations);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+  }, [location.search]);
+
+  useEffect(() => {
+    getChats()
+      .then(data => {
+        newChats(data.chats);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
+
   const openCreateChatModal = () => {
     setShowCreateChatModal(true);
   };
@@ -60,17 +59,21 @@ const Main = () => {
     setShowCreateChatModal(false);
   };
 
-  // 단어 길이가 0 이상이고 리스트 길이가 0 이상이면, searchList로 map함수 적용
-  // 단어길이가 0이상이고 리스트길이가 0이면 "검색 결과가 없습니다."가 뜨게
-  // 아니면 chats로 map함수 적용됐으면 좋겠어
-
   return (
     <Layout height={layoutHeight - 150}>
       <InLayout>
         <Search />
 
         <ListBox>
-          {searchTerm !== null && searchList.length > 0 ? (
+          {searchTerm === null && chats.length > 0 ? (
+            chats.map((item) => (
+              <Link to={`/chatting/${item.chatId}`} key={item.chatId}>
+                <ChatListBox>
+                  <ChatList title={item.title} content={item.content} />
+                </ChatListBox>
+              </Link>
+            ))
+          ) : searchTerm !== null && searchList.length > 0 ? (
             searchList.map((item) => (
               <Link to={`/chatting/${item.conversationId}`} key={item.conversationId}>
                 <ChatListBox>
@@ -80,23 +83,16 @@ const Main = () => {
             ))
           ) : searchTerm !== null && searchList.length === 0 ? (
             <p>검색 결과가 없습니다.</p>
-          ) : chats.length > 0 ? (
-            chats.map((item) => (
-              <Link to={`/chatting/${item.chatId}`} key={item.chatId}>
-                <ChatListBox>
-                  <ChatList title={item.title} content={item.content} />
-                </ChatListBox>
-              </Link>
-            ))
           ) : (
             <p>채팅방이 없습니다.</p>
           )}
-
         </ListBox>
       </InLayout>
+
       <BLayout>
         <SmallButton text="채팅방 만들기" type="chatting" onClick={openCreateChatModal} />
       </BLayout>
+
       {showCreateChatModal && (
         <>
           <ModalOverlay onClick={closeCreateChatModal} />
