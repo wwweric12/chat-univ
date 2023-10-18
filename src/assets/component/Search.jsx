@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
 import searchSrc from "../images/search.svg";
 import closeSrc from "../images/search_close.svg";
 
@@ -10,11 +9,10 @@ const Search = () => {
   const [searchSubmitted, setSearchSubmitted] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const querySearchTerm = queryParams.get("q");
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const querySearchTerm = queryParams.get("q");
-
     if (querySearchTerm) {
       setSearchTerm(querySearchTerm);
       setSearchSubmitted(true);
@@ -26,9 +24,7 @@ const Search = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const queryParams = new URLSearchParams();
     queryParams.set("q", searchTerm);
-
     const searchPath = `${location.pathname}?${queryParams.toString()}`;
     navigate(searchPath);
     setSearchSubmitted(true);

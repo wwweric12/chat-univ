@@ -1,18 +1,46 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import SmallButton from "../../component/SmallButton";
 import Search from "../../component/Search";
 import CreateChat from "../../component/modal/CreateChat";
 import ChatList from "../../component/ChatList";
 import { getChats } from "../../../api/Chat/Chats";
+import { getChatSearch } from "../../../api/Chat/ChatSearch";
 
 const Main = () => {
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
   const [showCreateChatModal, setShowCreateChatModal] = useState(false);
   const [chats, newChats] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchList, setSearchList] = useState([]);
+  const location = useLocation();
 
-  //전체 채팅방 조회 api
+  useEffect(() => {
+    const handleResize = () => {
+      setLayoutHeight(window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const newSearchTerm = queryParams.get("q");
+    setSearchTerm(newSearchTerm);
+
+    getChatSearch(newSearchTerm, 10, 4)
+      .then(data => {
+        setSearchList(data.conversations);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+  }, [location.search]);
+
   useEffect(() => {
     getChats()
       .then(data => {
@@ -21,18 +49,6 @@ const Main = () => {
       .catch(error => {
         console.error(error);
       });
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setLayoutHeight(window.innerHeight);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
   }, []);
 
   const openCreateChatModal = () => {
@@ -49,7 +65,7 @@ const Main = () => {
         <Search />
 
         <ListBox>
-          {chats.length > 0 && (
+          {searchTerm === null && chats.length > 0 ? (
             chats.map((item) => (
               <Link to={`/chatting/${item.chatId}`} key={item.chatId}>
                 <ChatListBox>
@@ -57,13 +73,26 @@ const Main = () => {
                 </ChatListBox>
               </Link>
             ))
+          ) : searchTerm !== null && searchList.length > 0 ? (
+            searchList.map((item) => (
+              <Link to={`/chatting/${item.conversationId}`} key={item.conversationId}>
+                <ChatListBox>
+                  <ChatList title={item.ask} content={item.answer} />
+                </ChatListBox>
+              </Link>
+            ))
+          ) : searchTerm !== null && searchList.length === 0 ? (
+            <p>검색 결과가 없습니다.</p>
+          ) : (
+            <p>채팅방이 없습니다.</p>
           )}
-
         </ListBox>
       </InLayout>
+
       <BLayout>
         <SmallButton text="채팅방 만들기" type="chatting" onClick={openCreateChatModal} />
       </BLayout>
+
       {showCreateChatModal && (
         <>
           <ModalOverlay onClick={closeCreateChatModal} />
