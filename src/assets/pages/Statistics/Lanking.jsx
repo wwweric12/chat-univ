@@ -1,32 +1,56 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { getStatistics } from "../../../api/Statistics/SearchStatistics";
+import { useState, useEffect } from "react";
 
 const Lanking = () => {
-  const lankingData = [
-    { id: 1, content: "검색어1" },
-    { id: 2, content: "검색어2" },
-    { id: 3, content: "검색어3" },
-    { id: 4, content: "검색어4" },
-    { id: 5, content: "검색어5" },
-  ];
+  const [data, setData] = useState('');
+  const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setLayoutHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    getStatistics()
+      .then((result) => {
+        setData(result.statistics);
+      })
+      .catch((error) => {
+        setData(error.response.data);
+      });
+  }, []);
 
   const navigate = useNavigate();
 
-  const handleClick = (content) => {
-    navigate(`/?q=${content}`);
+  const handleClick = (word) => {
+    navigate(`/?q=${word}`);
   };
 
+
   return (
-    <Layout>
+    <Layout height={layoutHeight - 150}>
       <TitleLayout>
         <TitleBox>명지대 실시간 랭킹</TitleBox>
       </TitleLayout>
       <LankingLayout>
-        {lankingData.map((item) => (
-          <LankingBox key={item.id} onClick={() => handleClick(item.content)}>
-            {item.id}. {item.content}
-          </LankingBox>
-        ))}
+        {Array.isArray(data) && data.length > 0 ? (
+          data.map((item, idx) => (
+            <LankingBox key={idx + 1} onClick={() => handleClick(item.word)}>
+              {idx + 1}. {item.word}
+            </LankingBox>
+          ))
+        ) : (
+          <Pdiv>{data}</Pdiv>
+        )}
       </LankingLayout>
     </Layout>
   );
@@ -43,6 +67,8 @@ const Layout = styled.div`
   flex: 1 0 0;
   align-self: stretch;
   background: ${({ theme }) => theme.colors.PURPLE10};
+  height: ${(props) => props.height}px;
+  overflow-y: auto;
 `;
 
 const TitleLayout = styled.div`
@@ -75,6 +101,13 @@ const LankingLayout = styled.div`
   align-items: flex-start;
   gap: 15px;
   align-self: stretch;
+  height: ${(props) => props.height}px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
 `;
 
 const LankingBox = styled.div`
@@ -98,4 +131,13 @@ const LankingBox = styled.div`
   @media (max-width: 529px) {
     font-size: 14px;
   }
+`;
+
+const Pdiv = styled.div`
+  padding: 10px 15px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  background-color: ${({ theme }) => theme.colors.WHITE};
+  border-radius: 10px;
 `;
