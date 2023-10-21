@@ -25,7 +25,7 @@ const Lanking = () => {
         setData(result.statistics);
       })
       .catch((error) => {
-        setData(error.response.data);
+        console.log(error);
       });
   }, []);
 
@@ -49,7 +49,7 @@ const Lanking = () => {
             </LankingBox>
           ))
         ) : (
-          <Pdiv>{data}</Pdiv>
+          <Pdiv>아직 검색 기록이 없습니다.</Pdiv>
         )}
       </LankingLayout>
     </Layout>
