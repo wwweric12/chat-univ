@@ -8,6 +8,7 @@ import { handleResize } from "../../utils/handleResize";
 const Lanking = () => {
   const [data, setData] = useState("");
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const cleanupResize = handleResize(setLayoutHeight);
@@ -16,15 +17,14 @@ const Lanking = () => {
 
   useEffect(() => {
     getStatistics()
-      .then((result) => {
-        setData(result.statistics);
+      .then((data) => {
+        console.log(data);
+        setData(data.statistics);
       })
       .catch((error) => {
         setData(error.response.data);
       });
   }, []);
-
-  const navigate = useNavigate();
 
   const handleClick = (word) => {
     navigate(`/?q=${word}`);
@@ -35,6 +35,7 @@ const Lanking = () => {
       <TitleLayout>
         <TitleBox>명지대 실시간 랭킹</TitleBox>
       </TitleLayout>
+
       <LankingLayout>
         {Array.isArray(data) && data.length > 0 ? (
           data.map((item, idx) => (
