@@ -1,53 +1,53 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+
 import SmallButton from "../../component/SmallButton";
 import Search from "../../component/Search";
 import CreateChat from "../../component/modal/CreateChat";
 import ChatList from "../../component/ChatList";
 import { getChats } from "../../../api/Chat/Chats";
 import { getChatSearch } from "../../../api/Chat/ChatSearch";
+import { handleResize } from "../../utils/handleResize";
 
 const Main = () => {
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
   const [showCreateChatModal, setShowCreateChatModal] = useState(false);
-  const [chats, newChats] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [chats, setChats] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchList, setSearchList] = useState([]);
   const location = useLocation();
 
   useEffect(() => {
-    const handleResize = () => {
-      setLayoutHeight(window.innerHeight);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    const cleanupResize = handleResize(setLayoutHeight);
+    return () => cleanupResize();
   }, []);
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const newSearchTerm = queryParams.get("q");
-    setSearchTerm(newSearchTerm);
+  //검색 api
+  // useEffect(() => {
+  //   const queryParams = new URLSearchParams(location.search);
+  //   const newSearchTerm = queryParams.get("q");
+  //   setSearchTerm(newSearchTerm || "");
 
-    getChatSearch(newSearchTerm, 10, 4)
-      .then(data => {
-        setSearchList(data.conversations);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+  //   getChatSearch(newSearchTerm, 10, 4)
+  //     .then((data) => {
+  //       setSearchList(data.conversations);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching chat search:", error);
+  //       // 사용자에게 에러를 표시하는 로직 추가 가능
+  //     });
+  // }, [location.search]);
 
-  }, [location.search]);
-
+  //전체 채팅방 내역api
   useEffect(() => {
     getChats()
-      .then(data => {
-        newChats(data.chats);
+      .then((data) => {
+        setChats(data.chats);
       })
-      .catch(error => {
-        console.error(error);
+      .catch((error) => {
+        console.error("Error fetching chats:", error);
+        // 사용자에게 에러를 표시하는 로직 추가 가능
       });
   }, []);
 
@@ -65,7 +65,7 @@ const Main = () => {
         <Search />
 
         <ListBox>
-          {searchTerm === null && chats.length > 0 ? (
+          {searchTerm !== undefined && chats.length > 0 ? (
             chats.map((item) => (
               <Link to={`/chatting/${item.chatId}`} key={item.chatId}>
                 <ChatListBox>
@@ -73,7 +73,7 @@ const Main = () => {
                 </ChatListBox>
               </Link>
             ))
-          ) : searchTerm !== null && searchList.length > 0 ? (
+          ) : searchTerm !== undefined && searchList.length > 0 ? (
             searchList.map((item) => (
               <Link to={`/chatting/${item.conversationId}`} key={item.conversationId}>
                 <ChatListBox>
@@ -81,7 +81,7 @@ const Main = () => {
                 </ChatListBox>
               </Link>
             ))
-          ) : searchTerm !== null && searchList.length === 0 ? (
+          ) : searchTerm !== undefined && searchList.length === 0 ? (
             <p>검색 결과가 없습니다.</p>
           ) : (
             <p>채팅방이 없습니다.</p>
@@ -137,8 +137,8 @@ const BLayout = styled.div`
 `;
 
 const ListBox = styled.div`
-  display: grid; 
-  grid-template-columns: repeat(2, 1fr); 
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   padding: 10px 20px;
   gap: 30px;
   align-self: stretch;
