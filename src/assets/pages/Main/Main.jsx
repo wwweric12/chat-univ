@@ -4,7 +4,6 @@ import { Link, useLocation } from "react-router-dom";
 
 import SmallButton from "../../component/SmallButton";
 import Search from "../../component/Search";
-import CreateChat from "../../component/modal/CreateChat";
 import ChatList from "../../component/ChatList";
 import { getChats } from "../../../api/Chat/Chats";
 import { getChatSearch } from "../../../api/Chat/ChatSearch";
@@ -12,10 +11,11 @@ import { handleResize } from "../../utils/handleResize";
 
 const Main = () => {
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
-  const [showCreateChatModal, setShowCreateChatModal] = useState(false);
-  const [chats, setChats] = useState("");
+  const [chats, setChats] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchList, setSearchList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -23,82 +23,74 @@ const Main = () => {
     return () => cleanupResize();
   }, []);
 
-  //검색 api
-  // useEffect(() => {
-  //   const queryParams = new URLSearchParams(location.search);
-  //   const newSearchTerm = queryParams.get("q");
-  //   setSearchTerm(newSearchTerm || "");
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const newSearchTerm = queryParams.get("q");
+    setSearchTerm(newSearchTerm || "");
 
-  //   getChatSearch(newSearchTerm, 10, 4)
-  //     .then((data) => {
-  //       setSearchList(data.conversations);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching chat search:", error);
-  //       // 사용자에게 에러를 표시하는 로직 추가 가능
-  //     });
-  // }, [location.search]);
+    setLoading(true);
+    setError(null);
 
-  //전체 채팅방 내역api
+    getChatSearch(newSearchTerm, 10, 4)
+      .then((data) => {
+        setSearchList(data.conversations);
+      })
+      .catch((error) => {
+        console.error("Error search:", error);
+        setError("검색 중 오류가 발생했습니다.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [location.search]);
+
   useEffect(() => {
     getChats()
       .then((data) => {
         setChats(data.chats);
       })
       .catch((error) => {
-        console.error("Error fetching chats:", error);
-        // 사용자에게 에러를 표시하는 로직 추가 가능
+        console.error("Error chats:", error);
+        setError("채팅방을 불러오는 중 오류가 발생했습니다.");
       });
   }, []);
 
-  const openCreateChatModal = () => {
-    setShowCreateChatModal(true);
-  };
+  const renderChatRoom = (chat) => (
+    <Link to={`/chatting/${chat.conversationId}`} key={chat.conversationId}>
+      <ChatListBox>
+        <ChatList title={chat.ask} content={chat.answer} />
+      </ChatListBox>
+    </Link>
+  );
 
-  const closeCreateChatModal = () => {
-    setShowCreateChatModal(false);
+  const renderChatList = () => {
+    if (loading) {
+      return <p>Loading...</p>;
+    }
+
+    if (error) {
+      return <p>{error}</p>;
+    }
+
+    const chatsToRender = searchTerm === "" ? chats : searchList;
+
+    return chatsToRender.length > 0 ? (
+      chatsToRender.map((chat) => renderChatRoom(chat))
+    ) : (
+      <p>채팅방이 없습니다.</p>
+    );
   };
 
   return (
     <Layout height={layoutHeight - 150}>
       <InLayout>
         <Search />
-
-        <ListBox>
-          {searchTerm !== undefined && chats.length > 0 ? (
-            chats.map((item) => (
-              <Link to={`/chatting/${item.chatId}`} key={item.chatId}>
-                <ChatListBox>
-                  <ChatList title={item.title} content={item.content} />
-                </ChatListBox>
-              </Link>
-            ))
-          ) : searchTerm !== undefined && searchList.length > 0 ? (
-            searchList.map((item) => (
-              <Link to={`/chatting/${item.conversationId}`} key={item.conversationId}>
-                <ChatListBox>
-                  <ChatList title={item.ask} content={item.answer} />
-                </ChatListBox>
-              </Link>
-            ))
-          ) : searchTerm !== undefined && searchList.length === 0 ? (
-            <p>검색 결과가 없습니다.</p>
-          ) : (
-            <p>채팅방이 없습니다.</p>
-          )}
-        </ListBox>
+        <ListBox>{renderChatList()}</ListBox>
       </InLayout>
 
       <BLayout>
-        <SmallButton text="채팅방 만들기" type="chatting" onClick={openCreateChatModal} />
+        <SmallButton text="채팅방 만들기" type="chatting" />
       </BLayout>
-
-      {showCreateChatModal && (
-        <>
-          <ModalOverlay onClick={closeCreateChatModal} />
-          <ModalLayout>{showCreateChatModal && <CreateChat />}</ModalLayout>
-        </>
-      )}
     </Layout>
   );
 };
