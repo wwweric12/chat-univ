@@ -1,22 +1,17 @@
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getStatistics } from "../../../api/Statistics/SearchStatistics";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { getStatistics } from "../../../api/Statistics/SearchStatistics";
+import { handleResize } from "../../utils/handleResize";
 
 const Lanking = () => {
-  const [data, setData] = useState('');
+  const [data, setData] = useState("");
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
 
   useEffect(() => {
-    const handleResize = () => {
-      setLayoutHeight(window.innerHeight);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    const cleanupResize = handleResize(setLayoutHeight);
+    return () => cleanupResize();
   }, []);
 
   useEffect(() => {
@@ -34,7 +29,6 @@ const Lanking = () => {
   const handleClick = (word) => {
     navigate(`/?q=${word}`);
   };
-
 
   return (
     <Layout height={layoutHeight - 150}>
