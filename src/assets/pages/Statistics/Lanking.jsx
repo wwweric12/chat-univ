@@ -18,7 +18,6 @@ const Lanking = () => {
   useEffect(() => {
     getStatistics()
       .then((data) => {
-        console.log(data);
         setData(data.statistics);
       })
       .catch((error) => {
