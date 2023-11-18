@@ -1,16 +1,19 @@
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
 
 import CommentForm from "./CommentForm";
 import CommentList from "./CommentList";
 
 const Comment = () => {
+  const { id } = useParams();
+
   return (
     <Layout>
       <TxtBox>
         <TxtComment>댓글</TxtComment>
       </TxtBox>
-      <CommentForm />
-      <CommentList />
+      <CommentForm chatId={id} />
+      <CommentList chatId={id} />
     </Layout>
   );
 };

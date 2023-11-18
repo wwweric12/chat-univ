@@ -3,14 +3,27 @@ import styled from "styled-components";
 
 import userSrc from "../images/user.svg";
 import sendSrc from "../images/send.svg";
+import { createComment } from "../../api/Chat/Comment";
 
-const CommentForm = () => {
+const CommentForm = (chatId) => {
   const [content, setContent] = useState("");
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const commentData = await createComment(content, chatId.chatId);
+      console.log(commentData);
+      setContent("");
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
+  };
 
   return (
     <Layout>
       <User alt="user" src={userSrc} />
-      <CommentFormBox>
+      <CommentFormBox onSubmit={handleCommentSubmit}>
         <Commentinput type="text" value={content} onChange={(e) => setContent(e.target.value)} />
         <SendBox type="submit">
           <img alt="send" src={sendSrc} />
