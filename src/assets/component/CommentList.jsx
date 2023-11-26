@@ -8,6 +8,7 @@ import { getCommentsForBoard } from "../../api/Board/Comments";
 const CommentList = ({ apiType }) => {
   const { id } = useParams();
   const [comments, setComments] = useState([]);
+  const userEmail = "a@a.com"; //현재 로그인되어 있는 유저 이메일 건네받아야함
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,15 +36,35 @@ const CommentList = ({ apiType }) => {
         <p>댓글이 없습니다.</p>
       ) : (
         comments.map((comment) => (
-          <Box key={comment.commentId}>
-            <User alt="user" src={userSrc} />
-            <CommentBox>
-              <CommentLayout>
-                <UserBox>{comment.email}</UserBox>
-                <ContentBox>{comment.content}</ContentBox>
-              </CommentLayout>
-            </CommentBox>
-          </Box>
+          <CLayout key={comment.commentId}>
+            {comment.email === userEmail ? (
+              <MyBox key={comment.commentId}>
+                <User alt="user" src={userSrc} />
+                <CommentBox>
+                  <CommentLayout>
+                    <MyUserBox>
+                      {comment.email}
+                      <EditBox>
+                        <FixBox>수정</FixBox>
+                        <FixBox>삭제</FixBox>
+                      </EditBox>
+                    </MyUserBox>
+                    <ContentBox>{comment.content}</ContentBox>
+                  </CommentLayout>
+                </CommentBox>
+              </MyBox>
+            ) : (
+              <Box key={comment.commentId}>
+                <User alt="user" src={userSrc} />
+                <CommentBox>
+                  <CommentLayout>
+                    <UserBox>{comment.email}</UserBox>
+                    <ContentBox>{comment.content}</ContentBox>
+                  </CommentLayout>
+                </CommentBox>
+              </Box>
+            )}
+          </CLayout>
         ))
       )}
     </Layout>
@@ -58,6 +79,39 @@ const Layout = styled.div`
   align-items: flex-start;
   gap: 5px;
   align-self: stretch;
+`;
+
+const MyUserBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+`;
+
+const EditBox = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+`;
+
+const FixBox = styled.div`
+  border-radius: 5px;
+  border: 1px solid ${({ theme }) => theme.colors.PURPLE100};
+  background: ${({ theme }) => theme.colors.WHITE};
+
+  display: flex;
+  padding: 3px;
+  align-items: flex-start;
+  gap: 10px;
+  color: ${({ theme }) => theme.colors.PURPLE100};
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+`;
+
+const CLayout = styled.div`
+  width: 100%;
 `;
 
 const Box = styled.div`
@@ -77,7 +131,7 @@ const MyBox = styled.div`
   gap: 8px;
   align-self: stretch;
   border-radius: 10px;
-  background: ${({ theme }) => theme.colors.WHITE};
+  background: ${({ theme }) => theme.colors.PURPLE10};
 `;
 
 const CommentBox = styled.div`
