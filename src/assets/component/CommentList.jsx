@@ -1,48 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 
 import userSrc from "../images/user.svg";
+import { getCommentsForBoard } from "../../api/Board/Comments";
 
-const CommentList = () => {
-  // 자신의 댓글인지 여부
-  const [own, setOwn] = useState(false);
-  const [editContent, setEditContent] = useState("");
+const CommentList = ({ apiType }) => {
+  const { id } = useParams();
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const pageSize = 2; // 원하는 페이지 크기
+        const commentId = 3; // 현재 로그인된 유저 id?(해당 id 기준으로 조회대상 설정이 무슨뜻?)
+        if (apiType === "board") {
+          const commentData = await getCommentsForBoard(id, pageSize, commentId);
+          setComments(commentData.commentResponse);
+        } else if (apiType === "chat") {
+          console.log("chat");
+        }
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  console.log(comments);
   return (
     <Layout>
-      {/* map함수로 구현  */}
-      {/* 임시로 내 댓글일때 아닐때 확인용으로 만듬 */}
-
-      <Box>
-        <User alt="user" src={userSrc} />
-
-        <CommentBox>
-          <UserBox>user</UserBox>
-          <ContentBox>content</ContentBox>
-        </CommentBox>
-      </Box>
-
-      {/* 내 댓글 */}
-      <MyBox>
-        <User alt="user" src={userSrc} />
-
-        <CommentBox>
-          <UserBox>
-            user
-            {!own && (
-              <ButtonLayout>
-                <ButtonBox>수정</ButtonBox>
-                <ButtonBox>삭제</ButtonBox>
-              </ButtonLayout>
-            )}
-          </UserBox>
-
-          {!own ? (
-            <ContentBox>content</ContentBox>
-          ) : (
-            <CommentInput value={editContent} onChange={(e) => setEditContent(e.target.value)} />
-          )}
-        </CommentBox>
-      </MyBox>
+      {comments.length === 0 ? (
+        <p>댓글이 없습니다.</p>
+      ) : (
+        comments.map((comment) => (
+          <MyBox key={comment.commentId}>
+            <User alt="user" src={userSrc} />
+            <CommentBox>
+              <UserBox>
+                {comment.commentId}
+                <ContentBox>{comment.content}</ContentBox>
+              </UserBox>
+            </CommentBox>
+          </MyBox>
+        ))
+      )}
     </Layout>
   );
 };
@@ -76,7 +79,6 @@ const MyBox = styled.div`
   border-radius: 10px;
   background: ${({ theme }) => theme.colors.PURPLE10};
 `;
-
 
 const CommentBox = styled.div`
   display: flex;

@@ -19,7 +19,7 @@ const Detail = () => {
           <DetailContent>Content...</DetailContent>
         </DetailContentBox>
       </DetailContainer>
-      <Comment />
+      <Comment apiType="board" />
     </>
   );
 };
