@@ -11,8 +11,7 @@ export const getCommentsForBoard = async (boardId, pageSize, commentId) => {
         commentId,
       },
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAwOTk5MzEwLCJleHAiOjE3MDEwMDI5MTB9.-sM9lZ55O8AeGSjtwcizrFrRNpUFqjBwaVyqcE1QLGQ`,
-        "Content-Type": "application/json;charset=UTF-8",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
 
@@ -24,17 +23,16 @@ export const getCommentsForBoard = async (boardId, pageSize, commentId) => {
 };
 
 //게시판 댓글 생성
-export const postCommentForBoard = async (content) => {
+export const postCommentForBoard = async (boardId, content) => {
   try {
     const response = await axios.post(
-      "/api/boards/1/comments",
+      `/api/boards/${boardId}/comments`,
       {
         content: content,
       },
       {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAwOTk5MzEwLCJleHAiOjE3MDEwMDI5MTB9.-sM9lZ55O8AeGSjtwcizrFrRNpUFqjBwaVyqcE1QLGQ`,
-          "Content-Type": "application/json;charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       },
     );
@@ -46,4 +44,6 @@ export const postCommentForBoard = async (content) => {
   }
 };
 
-//게시판 댓글
+//게시판 댓글 수정
+
+//게시판 댓글 삭제
