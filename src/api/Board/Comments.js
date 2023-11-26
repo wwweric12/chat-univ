@@ -28,7 +28,7 @@ export const postCommentForBoard = async (boardId, content) => {
       },
       {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAwOTk5MzEwLCJleHAiOjE3MDEwMDI5MTB9.-sM9lZ55O8AeGSjtwcizrFrRNpUFqjBwaVyqcE1QLGQ`,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAxMDA3NTU3LCJleHAiOjE3MDEwMTExNTd9.UPcCtTYbZ4O-4CH_H_UHgWhug4yiAFfVbLUmo-1NZgY`,
         },
       },
     );

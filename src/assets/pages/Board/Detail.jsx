@@ -14,7 +14,7 @@ const Detail = () => {
 
   return (
     <Layout height={layoutHeight - 150}>
-      <DetailContainer>
+      <DetailContainer className="abc">
         <DetailUserBox>
           <DetailUserImg src={user} alt="userImg"></DetailUserImg>
           <DetailUserIdBox>
@@ -27,7 +27,9 @@ const Detail = () => {
           <DetailContent>Content...</DetailContent>
         </DetailContentBox>
       </DetailContainer>
-      <Comment apiType="board" />
+      <CommentLayout>
+        <Comment apiType="board" />
+      </CommentLayout>
     </Layout>
   );
 };
@@ -43,6 +45,18 @@ const Layout = styled.div`
   flex: 1 0 0;
   align-self: stretch;
   height: ${(props) => props.height}px;
+
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
+`;
+
+const CommentLayout = styled.div`
+  width: 100%;
+  height: 30%;
 `;
 
 const DetailContainer = styled.div`
@@ -50,7 +64,7 @@ const DetailContainer = styled.div`
   align-items: center;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 70% !important;
   display: flex;
   padding: 5px;
   flex-direction: column;

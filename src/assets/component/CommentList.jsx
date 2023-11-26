@@ -35,15 +35,15 @@ const CommentList = ({ apiType }) => {
         <p>댓글이 없습니다.</p>
       ) : (
         comments.map((comment) => (
-          <MyBox key={comment.commentId}>
+          <Box key={comment.commentId}>
             <User alt="user" src={userSrc} />
             <CommentBox>
-              <UserBox>
-                {comment.commentId}
+              <CommentLayout>
+                <UserBox>{comment.email}</UserBox>
                 <ContentBox>{comment.content}</ContentBox>
-              </UserBox>
+              </CommentLayout>
             </CommentBox>
-          </MyBox>
+          </Box>
         ))
       )}
     </Layout>
@@ -77,20 +77,30 @@ const MyBox = styled.div`
   gap: 8px;
   align-self: stretch;
   border-radius: 10px;
-  background: ${({ theme }) => theme.colors.PURPLE10};
+  background: ${({ theme }) => theme.colors.WHITE};
 `;
 
 const CommentBox = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  gap: 10px;
   flex: 1 0 0;
+`;
+
+const CommentLayout = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  align-self: stretch;
 `;
 
 const UserBox = styled.div`
   display: flex;
-  align-items: ${(props) => props.alignItems || "center"};
-  gap: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-self: stretch;
   color: ${({ theme }) => theme.colors.BLACK};
   font-size: 14px;
   font-weight: 400;

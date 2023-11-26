@@ -11,8 +11,6 @@ const CommentForm = ({ apiType }) => {
   const [content, setContent] = useState("");
 
   const handleCommentSubmit = async (e) => {
-    e.preventDefault();
-
     try {
       console.log(id, content);
       if (apiType === "board") {
