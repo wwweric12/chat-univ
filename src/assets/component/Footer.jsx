@@ -60,6 +60,7 @@ const FooterContainer = styled.div`
   justify-content: space-between;
   border-top: 1px solid ${({ theme }) => theme.colors.GRAY};
   padding: 15px 30px 25px 30px;
+  background-color: ${({ theme }) => theme.colors.WHITE};
 `;
 
 const ImgContainer = styled.div`

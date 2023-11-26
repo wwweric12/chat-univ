@@ -3,15 +3,11 @@ import axios from "axios";
 import { Axios } from "../Axios";
 
 //게시판 댓글 리스트
-export const getCommentsForBoard = async (boardId, pageSize, commentId) => {
+export const getCommentsForBoard = async (boardId) => {
   try {
-    const response = await axios.get(`/api/conversations/${boardId}/comments`, {
-      params: {
-        pageSize,
-        commentId,
-      },
+    const response = await axios.get(`/api/boards/${boardId}/comments`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAwOTk5MzEwLCJleHAiOjE3MDEwMDI5MTB9.-sM9lZ55O8AeGSjtwcizrFrRNpUFqjBwaVyqcE1QLGQ`,
       },
     });
 
@@ -32,7 +28,7 @@ export const postCommentForBoard = async (boardId, content) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAwOTk5MzEwLCJleHAiOjE3MDEwMDI5MTB9.-sM9lZ55O8AeGSjtwcizrFrRNpUFqjBwaVyqcE1QLGQ`,
         },
       },
     );

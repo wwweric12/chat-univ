@@ -1,11 +1,19 @@
 import styled from "styled-components";
+import { useState, useEffect } from "react";
 
 import user from "../../images/user.svg";
 import Comment from "../../component/Comment";
+import { handleResize } from "../../utils/handleResize";
 
 const Detail = () => {
+  const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
+  useEffect(() => {
+    const cleanupResize = handleResize(setLayoutHeight);
+    return () => cleanupResize();
+  }, []);
+
   return (
-    <>
+    <Layout height={layoutHeight - 150}>
       <DetailContainer>
         <DetailUserBox>
           <DetailUserImg src={user} alt="userImg"></DetailUserImg>
@@ -20,11 +28,22 @@ const Detail = () => {
         </DetailContentBox>
       </DetailContainer>
       <Comment apiType="board" />
-    </>
+    </Layout>
   );
 };
 
 export default Detail;
+
+const Layout = styled.div`
+  display: flex;
+  padding: 0px 10px 10px 10px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1 0 0;
+  align-self: stretch;
+  height: ${(props) => props.height}px;
+`;
 
 const DetailContainer = styled.div`
   display: flex;

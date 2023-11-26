@@ -24,6 +24,8 @@ const Layout = styled.div`
   align-items: flex-start;
   flex: 1 0 0;
   align-self: stretch;
+  /* overflow-y: auto;
+  height: 30% !important; */
 `;
 
 const TxtBox = styled.div`
