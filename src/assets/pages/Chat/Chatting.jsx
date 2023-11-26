@@ -84,7 +84,7 @@ const Chatting = () => {
         </ChatRoom>
       </ChatContainer>
       <CommentContainer>
-        <Comment />
+        <Comment apiType="chat" />
       </CommentContainer>
     </PageContainer>
   );

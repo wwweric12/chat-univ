@@ -1,12 +1,20 @@
 import styled from "styled-components";
+import { useState, useEffect } from "react";
 
 import user from "../../images/user.svg";
 import Comment from "../../component/Comment";
+import { handleResize } from "../../utils/handleResize";
 
 const Detail = () => {
+  const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
+  useEffect(() => {
+    const cleanupResize = handleResize(setLayoutHeight);
+    return () => cleanupResize();
+  }, []);
+
   return (
-    <>
-      <DetailContainer>
+    <Layout height={layoutHeight - 150}>
+      <DetailContainer className="abc">
         <DetailUserBox>
           <DetailUserImg src={user} alt="userImg"></DetailUserImg>
           <DetailUserIdBox>
@@ -19,19 +27,44 @@ const Detail = () => {
           <DetailContent>Content...</DetailContent>
         </DetailContentBox>
       </DetailContainer>
-      <Comment />
-    </>
+      <CommentLayout>
+        <Comment apiType="board" />
+      </CommentLayout>
+    </Layout>
   );
 };
 
 export default Detail;
+
+const Layout = styled.div`
+  display: flex;
+  padding: 0px 10px 10px 10px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1 0 0;
+  align-self: stretch;
+  height: ${(props) => props.height}px;
+
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
+`;
+
+const CommentLayout = styled.div`
+  width: 100%;
+  height: 30%;
+`;
 
 const DetailContainer = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 70% !important;
   display: flex;
   padding: 5px;
   flex-direction: column;

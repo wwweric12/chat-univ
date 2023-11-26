@@ -1,18 +1,38 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 
 import userSrc from "../images/user.svg";
 import sendSrc from "../images/send.svg";
+import { postCommentForBoard } from "../../api/Board/Comments";
 
-const CommentForm = () => {
+const CommentForm = ({ apiType }) => {
+  const { id } = useParams();
   const [content, setContent] = useState("");
+
+  const handleCommentSubmit = async (e) => {
+    try {
+      console.log(id, content);
+      if (apiType === "board") {
+        const result = await postCommentForBoard(id, content);
+        console.log("게시판 댓글이 성공적으로 등록되었습니다:", result);
+        setContent("");
+      } else if (apiType === "chat") {
+        // const result = await postCommentForChat(content);
+        // // 채팅 댓글 API 호출 후의 처리
+        // console.log("채팅 댓글이 성공적으로 등록되었습니다:", result);
+      }
+    } catch (error) {
+      console.error("댓글 등록 중 에러:", error);
+    }
+  };
 
   return (
     <Layout>
       <User alt="user" src={userSrc} />
       <CommentFormBox>
         <Commentinput type="text" value={content} onChange={(e) => setContent(e.target.value)} />
-        <SendBox type="submit">
+        <SendBox type="submit" onClick={handleCommentSubmit}>
           <img alt="send" src={sendSrc} />
         </SendBox>
       </CommentFormBox>

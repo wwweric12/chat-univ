@@ -3,14 +3,14 @@ import styled from "styled-components";
 import CommentForm from "./CommentForm";
 import CommentList from "./CommentList";
 
-const Comment = () => {
+const Comment = ({ apiType }) => {
   return (
     <Layout>
       <TxtBox>
         <TxtComment>댓글</TxtComment>
       </TxtBox>
-      <CommentForm />
-      <CommentList />
+      <CommentForm apiType={apiType} />
+      <CommentList apiType={apiType} />
     </Layout>
   );
 };
