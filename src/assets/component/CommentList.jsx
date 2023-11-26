@@ -3,18 +3,20 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 
 import userSrc from "../images/user.svg";
-import { getCommentsForBoard } from "../../api/Board/Comments";
+import { deleteComment, getCommentsForBoard, updateComment } from "../../api/Board/Comments";
 
 const CommentList = ({ apiType }) => {
   const { id } = useParams();
   const [comments, setComments] = useState([]);
-  const userEmail = "a@a.com"; //현재 로그인되어 있는 유저 이메일 건네받아야함
+  const userEmail = "a@a.com";
+  const [editedComment, setEditedComment] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const pageSize = 2; // 원하는 페이지 크기
-        const commentId = 3; // 현재 로그인된 유저 id?(해당 id 기준으로 조회대상 설정이 무슨뜻?)
+        const pageSize = 2;
+        const commentId = 3;
+        //더보기 버튼 추가하기
         if (apiType === "board") {
           const commentData = await getCommentsForBoard(id, pageSize, commentId);
           setComments(commentData.commentResponse);
@@ -29,7 +31,41 @@ const CommentList = ({ apiType }) => {
     fetchData();
   }, [id]);
 
-  console.log(comments);
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await deleteComment(commentId);
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.commentId !== commentId),
+      );
+    } catch (error) {
+      console.error("댓글 삭제 에러:", error);
+    }
+  };
+
+  const handleEditComment = (commentId) => setEditedComment(commentId);
+
+  const handleEditContentChange = (commentId, newContent) => {
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment.commentId === commentId ? { ...comment, content: newContent } : comment,
+      ),
+    );
+  };
+
+  const handleUpdateComment = async (commentId, newContent) => {
+    try {
+      await updateComment(commentId, newContent);
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.commentId === commentId ? { ...comment, content: newContent } : comment,
+        ),
+      );
+      setEditedComment(null);
+    } catch (error) {
+      console.error("댓글 수정 에러:", error);
+    }
+  };
+
   return (
     <Layout>
       {comments.length === 0 ? (
@@ -44,12 +80,38 @@ const CommentList = ({ apiType }) => {
                   <CommentLayout>
                     <MyUserBox>
                       {comment.email}
-                      <EditBox>
-                        <FixBox>수정</FixBox>
-                        <FixBox>삭제</FixBox>
-                      </EditBox>
+                      {editedComment === comment.commentId ? (
+                        <FixBox
+                          onClick={() => handleUpdateComment(comment.commentId, comment.content)}
+                        >
+                          완료
+                        </FixBox>
+                      ) : (
+                        <>
+                          <EditBox>
+                            <FixBox onClick={() => handleEditComment(comment.commentId)}>
+                              수정
+                            </FixBox>
+                            <FixBox onClick={() => handleDeleteComment(comment.commentId)}>
+                              삭제
+                            </FixBox>
+                          </EditBox>
+                        </>
+                      )}
                     </MyUserBox>
-                    <ContentBox>{comment.content}</ContentBox>
+                    <ContentBox2>
+                      {editedComment === comment.commentId ? (
+                        <CommentInput
+                          type="text"
+                          value={comment.content}
+                          onChange={(e) =>
+                            handleEditContentChange(comment.commentId, e.target.value)
+                          }
+                        />
+                      ) : (
+                        comment.content
+                      )}
+                    </ContentBox2>
                   </CommentLayout>
                 </CommentBox>
               </MyBox>
@@ -98,6 +160,7 @@ const FixBox = styled.div`
   border-radius: 5px;
   border: 1px solid ${({ theme }) => theme.colors.PURPLE100};
   background: ${({ theme }) => theme.colors.WHITE};
+  cursor: pointer;
 
   display: flex;
   padding: 3px;
@@ -182,26 +245,18 @@ const ContentBox = styled.div`
   }
 `;
 
-const ButtonLayout = styled.div`
+const ContentBox2 = styled.div`
   display: flex;
-  align-items: flex-start;
-  gap: 5px;
-`;
-
-const ButtonBox = styled.button`
-  display: flex;
-  padding: 3px;
+  padding: 5px;
   align-items: flex-start;
   gap: 10px;
-  border-radius: 5px;
-  border: 1px solid ${({ theme }) => theme.colors.PURPLE100};
-  background: ${({ theme }) => theme.colors.WHITE};
-  color: ${({ theme }) => theme.colors.PURPLE100};
-  font-size: 12px;
+  align-self: stretch;
+  color: ${({ theme }) => theme.colors.BLACK};
+  font-size: 16px;
   font-weight: 400;
 
   @media (max-width: 529px) {
-    font-size: 10px;
+    font-size: 12px;
   }
 `;
 
