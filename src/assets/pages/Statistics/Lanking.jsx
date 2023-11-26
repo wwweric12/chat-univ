@@ -1,46 +1,40 @@
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getStatistics } from "../../../api/Statistics/SearchStatistics";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { getStatistics } from "../../../api/Statistics/SearchStatistics";
+import { handleResize } from "../../utils/handleResize";
 
 const Lanking = () => {
-  const [data, setData] = useState('');
+  const [data, setData] = useState("");
   const [layoutHeight, setLayoutHeight] = useState(window.innerHeight);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const handleResize = () => {
-      setLayoutHeight(window.innerHeight);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    const cleanupResize = handleResize(setLayoutHeight);
+    return () => cleanupResize();
   }, []);
 
   useEffect(() => {
     getStatistics()
-      .then((result) => {
-        setData(result.statistics);
+      .then((data) => {
+        setData(data.statistics);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
 
-  const navigate = useNavigate();
-
   const handleClick = (word) => {
     navigate(`/?q=${word}`);
   };
-
 
   return (
     <Layout height={layoutHeight - 150}>
       <TitleLayout>
         <TitleBox>명지대 실시간 랭킹</TitleBox>
       </TitleLayout>
+
       <LankingLayout>
         {Array.isArray(data) && data.length > 0 ? (
           data.map((item, idx) => (
