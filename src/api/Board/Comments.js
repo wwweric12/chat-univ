@@ -7,7 +7,7 @@ export const getCommentsForBoard = async (boardId) => {
   try {
     const response = await axios.get(`/api/boards/${boardId}/comments`, {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAwOTk5MzEwLCJleHAiOjE3MDEwMDI5MTB9.-sM9lZ55O8AeGSjtwcizrFrRNpUFqjBwaVyqcE1QLGQ`,
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
 
@@ -28,7 +28,7 @@ export const postCommentForBoard = async (boardId, content) => {
       },
       {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAxMDExOTY0LCJleHAiOjE3MDEwMTU1NjR9.u_Xk2Q0mR2SFkT8XhftnwPPziXk2Z8vLXHfl4z4kwTE`,
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       },
     );
@@ -50,7 +50,7 @@ export const updateComment = async (commentId, newContent) => {
       },
       {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAxMDExOTY0LCJleHAiOjE3MDEwMTU1NjR9.u_Xk2Q0mR2SFkT8XhftnwPPziXk2Z8vLXHfl4z4kwTE`,
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       },
     );
@@ -67,7 +67,7 @@ export const deleteComment = async (commentId) => {
   try {
     const response = await axios.delete(`/api/comments/${commentId}`, {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNzAxMDExOTY0LCJleHAiOjE3MDEwMTU1NjR9.u_Xk2Q0mR2SFkT8XhftnwPPziXk2Z8vLXHfl4z4kwTE`,
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
 
